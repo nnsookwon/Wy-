@@ -3,7 +3,11 @@ package bigdee2k.wy.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.AccessToken;
@@ -22,8 +26,9 @@ import java.util.ArrayList;
 
 import bigdee2k.wy.R;
 import bigdee2k.wy.models.FacebookFriend;
+import bigdee2k.wy.models.MyRecyclerAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter.RecyclerViewClickListener {
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
@@ -32,12 +37,22 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<FacebookFriend> friends;
 
+    RecyclerView recyclerView;
+    MyRecyclerAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         friends = new ArrayList<>();
+
+        adapter = new MyRecyclerAdapter(friends);
+        adapter.setItemListener(this);
+        recyclerView = (RecyclerView)findViewById(R.id.friend_list_recycler_view);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter.notifyDataSetChanged();
 
         checkAuth();
     }
@@ -78,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     /* handle the result */
                         Log.d("facebook friends:" ,response.toString());
                         try {
+                            friends.clear();
                             JSONObject json = response.getJSONObject();
                             JSONArray jArray = json.getJSONArray("data");
                             Log.d("Facebook Json:", jArray.toString());
@@ -92,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                                 friends.add(friend);
                             }
                             Log.d("facebook friends", friends.toString());
+                            adapter.notifyDataSetChanged();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -103,10 +120,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case R.id.button_sign_out:
+                logOut(null);
+                break;
+        }
+        return true;
+    }
+
     public void logOut(View view) {
         mFirebaseAuth.signOut(); //sign out of firebase
         LoginManager.getInstance().logOut(); //sign out of facebook
         startActivity(new Intent(this, SignInActivity.class));
         finish();
+    }
+
+    // JACK TODO: send wya request upon selecting friend
+    @Override
+    public void recyclerViewListClicked(View v, int position) {
+        FacebookFriend friend = friends.get(position);
+        System.out.println("User name: " + friend.getUserName() + "\nID: " + friend.getId() + "\n");
     }
 }
