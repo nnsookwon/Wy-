@@ -74,7 +74,6 @@ public class FirebaseNotificationService extends Service {
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         if(dataSnapshot != null){
                             Notification notification = dataSnapshot.getValue(Notification.class);
-                            System.out.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                             showNotification(context,notification,dataSnapshot.getKey());
                         }
                     }
@@ -164,7 +163,7 @@ public class FirebaseNotificationService extends Service {
 
     private void flagNotificationAsSent(String notification_key) {
         mDatabase.getReference().child("notifications")
-                .child(firebaseAuth.getCurrentUser().getUid())
+                .child(Profile.getCurrentProfile().getId())
                 .child(notification_key)
                 .child("status")
                 .setValue(1);

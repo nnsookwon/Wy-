@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
-    FirebaseAuth.AuthStateListener mAuthListener;
-    FirebaseDatabase mDatabase;
 
     boolean facebookSDKInitilized;
     private ArrayList<FacebookFriend> friends;
