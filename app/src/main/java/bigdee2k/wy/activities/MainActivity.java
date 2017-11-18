@@ -1,14 +1,12 @@
 package bigdee2k.wy.activities;
 
 import android.content.DialogInterface;
-import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,11 +23,8 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
-import com.google.firebase.auth.FacebookAuthCredential;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -56,9 +51,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     FirebaseDatabase mDatabase;
 
     boolean facebookSDKInitilized;
-
-    ArrayList<FacebookFriend> friends;
-
     private ArrayList<FacebookFriend> friends;
 
     private RecyclerView recyclerView;
