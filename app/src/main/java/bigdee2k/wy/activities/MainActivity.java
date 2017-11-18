@@ -39,6 +39,7 @@ import bigdee2k.wy.R;
 import bigdee2k.wy.models.FacebookFriend;
 import bigdee2k.wy.models.MyRecyclerAdapter;
 import bigdee2k.wy.reusables.Utilities;
+import bigdee2k.wy.services.FirebaseNotificationService;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter.RecyclerViewClickListener {
 
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         adapter.notifyDataSetChanged();
 
         checkAuth();
+        startService(new Intent(this, FirebaseNotificationService.class));
     }
 
     private void checkAuth() {
@@ -198,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         alert.setTitle("Are You Sure?");
         alert.show();
         //requestConfirmation(friend.getUserName());
-        onLaunchCamera();
+        //onLaunchCamera();
     }
 
     public void requestConfirmation(String name) {
