@@ -1,10 +1,16 @@
 package bigdee2k.wy.activities;
 
+import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,13 +21,20 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FacebookAuthCredential;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import bigdee2k.wy.R;
@@ -30,20 +43,31 @@ import bigdee2k.wy.models.MyRecyclerAdapter;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter.RecyclerViewClickListener {
 
+    private static final int REQUEST_IMAGE_CAPTURE = 111;
+    private static final String FIREBASE_IMAGES = "FIREBASE_IMAGES";
+
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
 
     boolean facebookSDKInitilized;
 
-    ArrayList<FacebookFriend> friends;
 
-    RecyclerView recyclerView;
-    MyRecyclerAdapter adapter;
+    private ArrayList<FacebookFriend> friends;
+
+    private RecyclerView recyclerView;
+    private MyRecyclerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /* UNCOMMENT IF PLACING CUSTOM IMAGE IN TOP TOOLBAR
+        final android.support.v7.app.ActionBar actionBar= getSupportActionBar();
+        actionBar.setCustomView(R.layout.actionbar_custom_view_home);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        */
 
         friends = new ArrayList<>();
 
@@ -78,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                     }
                 }
             });
+
         }
     }
 
@@ -148,5 +173,52 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     public void recyclerViewListClicked(View v, int position) {
         FacebookFriend friend = friends.get(position);
         System.out.println("User name: " + friend.getUserName() + "\nID: " + friend.getId() + "\n");
+        //requestConfirmation(friend.getUserName());
+        onLaunchCamera();
+    }
+
+    public void requestConfirmation(String name) {
+        // 1. Instantiate an AlertDialog.Builder with its constructor
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder.setMessage("Wya request sent to " + name + "." )
+                .setTitle("Wya Request Sent!")
+                .show();
+    }
+
+    // Check permissions before calling this function
+    public void onLaunchCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            // mImageLabel.setImageBitmap(imageBitmap);
+            encodeBitmapAndSaveToFirebase(imageBitmap);
+        }
+    }
+
+    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 85, baos);
+        String imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference(FIREBASE_IMAGES)
+                .child(Profile.getCurrentProfile().getId())
+                .child("imageUrl");
+
+        ref.setValue(imageEncoded);
+    }
+
+    public static Bitmap decodeFromFirebaseBase64(String image) throws IOException {
+        byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
     }
 }
