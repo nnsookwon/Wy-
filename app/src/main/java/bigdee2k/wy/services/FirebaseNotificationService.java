@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import bigdee2k.wy.R;
 import bigdee2k.wy.activities.MainActivity;
+import bigdee2k.wy.activities.SendLocationActivity;
 import bigdee2k.wy.models.Notification;
 
 
@@ -121,22 +122,13 @@ public class FirebaseNotificationService extends Service {
         startService(new Intent(getApplicationContext(), FirebaseNotificationService.class));
     }
 
-
-
-
     private void showNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(notification.getDescription())
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setContentText(Html.fromHtml(notification.getMessage()
-                ))
-                .setAutoCancel(true);
+        Intent backIntent = new Intent(context, SendLocationActivity.class);
 
-        Intent backIntent = new Intent(context, MainActivity.class);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        backIntent.putExtra("sendLocation", true);
 
         Intent intent = new Intent(context, MainActivity.class);
 
@@ -145,20 +137,27 @@ public class FirebaseNotificationService extends Service {
             intent = new Intent(context, MainActivity.class);
         }
 
-
         final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
                 new Intent[] {backIntent}, PendingIntent.FLAG_ONE_SHOT);
-
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
 
-        mBuilder.setContentIntent(pendingIntent);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(notification.getDescription())
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setContentText(Html.fromHtml(notification.getMessage()
+                ))
+                .addAction(R.drawable.question_mark, "ACCEPT", pendingIntent)
+                .addAction(R.drawable.question_mark, "DECLINE", null)
+                .setAutoCancel(true)
+                .setOngoing(true);
 
+        mBuilder.setContentIntent(pendingIntent);
 
         NotificationManager mNotificationManager =  (NotificationManager)context. getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, mBuilder.build());
-
     }
 
     private void flagNotificationAsSent(String notification_key) {
@@ -168,6 +167,5 @@ public class FirebaseNotificationService extends Service {
                 .child("status")
                 .setValue(1);
     }
-
 
 }

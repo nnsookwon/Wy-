@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.SignInActivity"></activity>
-
+        <activity android:name=".activities.SendLocationActivity"></activity>
         <receiver android:name=".services.MyBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
