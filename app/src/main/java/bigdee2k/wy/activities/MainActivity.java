@@ -1,11 +1,17 @@
 package bigdee2k.wy.activities;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +29,10 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -45,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
 
     private static final int REQUEST_IMAGE_CAPTURE = 111;
     private static final String FIREBASE_IMAGES = "FIREBASE_IMAGES";
+    private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
@@ -54,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
 
     private RecyclerView recyclerView;
     private MyRecyclerAdapter adapter;
+
+    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
         */
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         friends = new ArrayList<>();
 
@@ -168,13 +183,15 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
 
     // JACK TODO: send wya request upon selecting friend
     private void sendNotificationToUser(FacebookFriend friend) {
-        Utilities.sendNotification(this,
+        Utilities.sendRequestNotification(this,
+                Profile.getCurrentProfile().getId(),
                 friend.getId(),
-                "A new notification from " + Profile.getCurrentProfile().getFirstName(),
-                "New Notification",
+                Profile.getCurrentProfile().getFirstName() + " would like to know wya.",
+                "Wy@ request",
                 "new_notification"
         );
     }
+
     @Override
     public void recyclerViewListClicked(View v, int position) {
         final FacebookFriend friend = friends.get(position);
@@ -185,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        getCurrentLocation();
                         dialog.cancel();
                     }
                 })
@@ -244,5 +262,55 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     public static Bitmap decodeFromFirebaseBase64(String image) throws IOException {
         byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
+    }
+
+    public void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    public void getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+
+            return;
+        }
+        mFusedLocationClient.getLastLocation()
+            .addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    Location loc = task.getResult();
+                    System.out.println("******" + loc.getLatitude() + "******" + loc.getLongitude());
+                }
+            });
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, try again
+                    getCurrentLocation();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }

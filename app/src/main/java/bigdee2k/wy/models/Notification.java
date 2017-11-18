@@ -13,20 +13,32 @@ import com.google.firebase.database.ServerValue;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Akinsete on 7/30/16.
- */
-
 public class Notification {
 
-    String user_id;
+    private String sender_user_id;
+    private String receiver_user_id;
+    private String message;
+    private String description;
+    private String type;
+    private long timestamp, status;
 
-    public String getUser_id() {
-        return user_id;
+    public Notification() {
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public String getSender_user_id() {
+        return sender_user_id;
+    }
+
+    public void setSender_user_id(String sender_user_id) {
+        this.sender_user_id = sender_user_id;
+    }
+
+    public String getReceiver_user_id() {
+        return receiver_user_id;
+    }
+
+    public void setReceiver_user_id(String receiver_user_id) {
+        this.receiver_user_id = receiver_user_id;
     }
 
     public String getMessage() {
@@ -69,15 +81,6 @@ public class Notification {
         this.status = status;
     }
 
-    String message;
-    String description;
-    String type;
-    long timestamp,status;
-
-    public Notification() {
-    }
-
-
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -86,17 +89,19 @@ public class Notification {
         result.put("timestamp", ServerValue.TIMESTAMP);
         result.put("type",type);
         result.put("status",status);
+        result.put("sender_user_id", sender_user_id);
         return result;
     }
 
-    public static void sendNotification(String user_id,String message,String description,String type){
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(user_id);
+    public static void sendNotification(String sender_user_id, String receiver_user_id, String message,String description,String type){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(receiver_user_id);
         String pushKey = databaseReference.push().getKey();
 
         Notification notification = new Notification();
         notification.setDescription(description);
         notification.setMessage(message);
-        notification.setUser_id(user_id);
+        notification.setSender_user_id(sender_user_id);
+        notification.setReceiver_user_id(receiver_user_id);
         notification.setType(type);
 
         Map<String, Object> forumValues = notification.toMap();

@@ -16,15 +16,18 @@ import bigdee2k.wy.models.Notification;
 public class Utilities {
 
 
-    public static void sendNotification(final Context context, String user_id, String message, String description, String type){
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(user_id);
+    public static void sendRequestNotification(final Context context, String sender_user_id, String receiver_user_id, String message, String description, String type){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(receiver_user_id);
         String pushKey = databaseReference.push().getKey();
 
         Notification notification = new Notification();
         notification.setDescription(description);
         notification.setMessage(message);
-        notification.setUser_id(user_id);
+        notification.setSender_user_id(sender_user_id);
+        notification.setReceiver_user_id(receiver_user_id);
         notification.setType(type);
+
+
 
         Map<String, Object> forumValues = notification.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
@@ -35,6 +38,40 @@ public class Utilities {
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if(databaseError == null){
                     Toast.makeText(context,"Notification sent",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    public static void sendLocationNotification(final Context context, String sender_user_id, String receiver_user_id,
+                                                String message, String description, String type,
+                                                double longitude, double latitude, String imageUrl){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(receiver_user_id);
+        String pushKey = databaseReference.push().getKey();
+
+        Notification notification = new Notification();
+        notification.setDescription(description);
+        notification.setMessage(message);
+        notification.setSender_user_id(sender_user_id);
+        notification.setReceiver_user_id(receiver_user_id);
+        notification.setType(type);
+
+
+
+        Map<String, Object> forumValues = notification.toMap();
+
+        // put additional information to specify location
+        forumValues.put("latitude", latitude);
+        forumValues.put("longitude", longitude);
+        forumValues.put("imageUrl", imageUrl);
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(pushKey, forumValues);
+        databaseReference.setPriority(ServerValue.TIMESTAMP);
+        databaseReference.updateChildren(childUpdates, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if(databaseError == null){
+                    Toast.makeText(context,"Location sent",Toast.LENGTH_LONG).show();
                 }
             }
         });
