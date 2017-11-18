@@ -1,8 +1,10 @@
 package bigdee2k.wy.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,9 +17,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,11 +31,14 @@ import java.util.ArrayList;
 import bigdee2k.wy.R;
 import bigdee2k.wy.models.FacebookFriend;
 import bigdee2k.wy.models.MyRecyclerAdapter;
+import bigdee2k.wy.reusables.Utilities;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter.RecyclerViewClickListener {
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
+    FirebaseAuth.AuthStateListener mAuthListener;
+    FirebaseDatabase mDatabase;
 
     boolean facebookSDKInitilized;
 
@@ -144,9 +151,35 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     }
 
     // JACK TODO: send wya request upon selecting friend
+    private void sendNotificationToUser(FacebookFriend friend) {
+        Utilities.sendNotification(this,
+                friend.getId(),
+                "A new notification from " + Profile.getCurrentProfile().getFirstName(),
+                "New Notification",
+                "new_notification"
+        );
+    }
     @Override
     public void recyclerViewListClicked(View v, int position) {
-        FacebookFriend friend = friends.get(position);
+        final FacebookFriend friend = friends.get(position);
         System.out.println("User name: " + friend.getUserName() + "\nID: " + friend.getId() + "\n");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to ask " + friend.getUserName() + " WY@?")
+                .setCancelable(false)
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendNotificationToUser(friend);
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setTitle("Are You Sure?");
+        alert.show();
     }
 }
