@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         adapter.notifyDataSetChanged();
 
         checkAuth();
-        startService(new Intent(this, FirebaseNotificationService.class));
     }
 
     private void checkAuth() {
@@ -109,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                     if (AccessToken.getCurrentAccessToken() != null) {
                         facebookSDKInitilized = true;
                         initFriendsList();
+                        startService(new Intent(MainActivity.this, FirebaseNotificationService.class));
                     }
                 }
             });
