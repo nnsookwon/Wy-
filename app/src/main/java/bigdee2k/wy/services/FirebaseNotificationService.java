@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
 import bigdee2k.wy.R;
+import bigdee2k.wy.activities.LocationReceivedActivity;
 import bigdee2k.wy.activities.MainActivity;
 import bigdee2k.wy.activities.SendLocationActivity;
 import bigdee2k.wy.models.Notification;
@@ -185,7 +186,7 @@ public class FirebaseNotificationService extends Service {
     private void showLocationNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
-        Intent backIntent = new Intent(context, SendLocationActivity.class);
+        Intent backIntent = new Intent(context, LocationReceivedActivity.class);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         backIntent.putExtra("sender_id", notification.getSender_user_id());
         backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
