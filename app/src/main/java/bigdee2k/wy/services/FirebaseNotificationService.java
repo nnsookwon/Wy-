@@ -82,8 +82,9 @@ public class FirebaseNotificationService extends Service {
                             else if (notification.isReject()){
                                 showRejectNotification(context,notification,dataSnapshot.getKey());
                             }
-                            else
+                            else {
                                 showLocationNotification(context,notification,dataSnapshot.getKey());
+                            }
                         }
                     }
 
@@ -169,7 +170,7 @@ public class FirebaseNotificationService extends Service {
     private void showRejectNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
-        Intent backIntent = new Intent(context, LocationReceivedActivity.class);
+        Intent backIntent = new Intent(context, MainActivity.class);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         backIntent.putExtra("sender_id", notification.getSender_user_id());
         backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
@@ -183,9 +184,6 @@ public class FirebaseNotificationService extends Service {
 
         final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
                 new Intent[] {backIntent}, PendingIntent.FLAG_ONE_SHOT);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(MainActivity.class);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)

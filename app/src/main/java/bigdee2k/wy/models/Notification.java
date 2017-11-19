@@ -97,7 +97,9 @@ public class Notification {
         this.request = request;
     }
 
-    public void setReject (boolean reject) {this.reject = reject; }
+    public void setReject (boolean reject) {
+        this.reject = reject;
+    }
 
     public double getLongitude() {
         return longitude;
