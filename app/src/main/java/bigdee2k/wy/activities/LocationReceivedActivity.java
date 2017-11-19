@@ -35,6 +35,8 @@ public class LocationReceivedActivity extends AppCompatActivity {
         longitude = callingIntent.getDoubleExtra("longitude", 0);
         latitude = callingIntent.getDoubleExtra("latitude", 0);
 
+        System.out.println("*********lolol" + longitude);
+
 
     }
 
@@ -50,6 +52,7 @@ public class LocationReceivedActivity extends AppCompatActivity {
 
     public void openMap(View v) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
+
         intent.setData(Uri.parse("geo:" + latitude + "," + longitude));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);

@@ -57,6 +57,9 @@ public class Utilities {
         notification.setReceiver_user_id(receiver_user_id);
         notification.setType(type);
         notification.setRequest(false);
+        notification.setLongitude(longitude);
+        notification.setLatitude(latitude);
+        notification.setImageUrl(imageUrl);
 
 
         Map<String, Object> forumValues = notification.toMap();

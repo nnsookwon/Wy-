@@ -194,6 +194,9 @@ public class FirebaseNotificationService extends Service {
         backIntent.putExtra("imageUrl", notification.getImageUrl());
 
 
+        System.out.println("*@@@@@@@@*lolol" + notification.getLongitude());
+
+
         Intent intent = new Intent(context, MainActivity.class);
 
         /*  Use the notification type to switch activity to stack on the main activity*/
@@ -201,7 +204,7 @@ public class FirebaseNotificationService extends Service {
             intent = new Intent(context, MainActivity.class);
         }
 
-        final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
+        final PendingIntent pendingIntent = PendingIntent.getActivities(context, 905,
                 new Intent[] {backIntent}, PendingIntent.FLAG_ONE_SHOT);
 
 
