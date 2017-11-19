@@ -24,8 +24,7 @@ public class LocationReceivedActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.send_location);
-
+        setContentView(R.layout.received_location);
 
         Intent callingIntent = getIntent();
 

@@ -22,6 +22,7 @@ public class Notification {
     private String type;
     private long timestamp, status;
     private boolean request;
+    private boolean reject;
     private double longitude, latitude;
     private String imageUrl;
 
@@ -88,9 +89,15 @@ public class Notification {
         return request;
     }
 
+    public boolean isReject() {
+        return reject;
+    }
+
     public void setRequest(boolean request) {
         this.request = request;
     }
+
+    public void setReject (boolean reject) {this.reject = reject; }
 
     public double getLongitude() {
         return longitude;

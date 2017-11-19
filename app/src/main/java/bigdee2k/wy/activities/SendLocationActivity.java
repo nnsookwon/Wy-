@@ -71,7 +71,11 @@ public class SendLocationActivity extends AppCompatActivity {
     }
 
     public void rejectRequest(View v) {
-
+        Utilities.sendRejectNotification(getApplicationContext(),
+                my_id,
+                friend_id,
+                "new_notification"
+        );
     }
 
     public void sendLocation(View v) {
