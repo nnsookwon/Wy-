@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -126,9 +127,19 @@ public class FirebaseNotificationService extends Service {
         flagNotificationAsSent(notification_key);
 
         Intent backIntent = new Intent(context, SendLocationActivity.class);
-
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        backIntent.putExtra("sendLocation", true);
+        backIntent.putExtra("sender_id", notification.getSender_user_id());
+        backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
+
+        Intent acceptIntent = new Intent(context, SendLocationActivity.class);
+        acceptIntent.putExtras(backIntent);
+        acceptIntent.putExtra("sendLocation", true);
+
+        Intent declineIntent = new Intent(context, SendLocationActivity.class);
+        declineIntent.putExtras(backIntent);
+        declineIntent.putExtra("sendLocation", false);
+
+
 
         Intent intent = new Intent(context, MainActivity.class);
 
@@ -140,6 +151,14 @@ public class FirebaseNotificationService extends Service {
         final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
                 new Intent[] {backIntent}, PendingIntent.FLAG_ONE_SHOT);
 
+
+        final PendingIntent pendingAcceptIntent = PendingIntent.getActivities(context, 901,
+                new Intent[] {acceptIntent}, PendingIntent.FLAG_ONE_SHOT);
+
+
+        final PendingIntent pendingDeclineIntent = PendingIntent.getActivities(context, 902,
+                new Intent[] {declineIntent}, PendingIntent.FLAG_ONE_SHOT);
+
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
 
@@ -149,8 +168,8 @@ public class FirebaseNotificationService extends Service {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentText(Html.fromHtml(notification.getMessage()
                 ))
-                .addAction(R.drawable.question_mark, "ACCEPT", pendingIntent)
-                .addAction(R.drawable.question_mark, "DECLINE", null)
+                .addAction(R.drawable.question_mark, "ACCEPT", pendingAcceptIntent)
+                .addAction(R.drawable.question_mark, "DECLINE", pendingDeclineIntent)
                 .setAutoCancel(true)
                 .setOngoing(true);
 

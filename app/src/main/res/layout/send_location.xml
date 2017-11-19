@@ -16,7 +16,8 @@
         android:text="ACCEPT"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:onClick="sendLocation"/>
 
     <Button
         android:id="@+id/decline"
@@ -28,7 +29,8 @@
         android:text="DECLINE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/accept" />
+        app:layout_constraintTop_toBottomOf="@+id/accept"
+        android:onClick="rejectRequest"/>
 
     <TextView
         android:id="@+id/textView2"

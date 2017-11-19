@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
 
     private static final int REQUEST_IMAGE_CAPTURE = 111;
     private static final String FIREBASE_IMAGES = "FIREBASE_IMAGES";
-    private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     private RecyclerView recyclerView;
     private MyRecyclerAdapter adapter;
 
-    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
         */
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
         friends = new ArrayList<>();
@@ -202,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        getCurrentLocation();
                         dialog.cancel();
                     }
                 })
@@ -272,45 +268,5 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         }
     }
 
-    public void getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-
-            return;
-        }
-        mFusedLocationClient.getLastLocation()
-            .addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    Location loc = task.getResult();
-                    System.out.println("******" + loc.getLatitude() + "******" + loc.getLongitude());
-                }
-            });
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, try again
-                    getCurrentLocation();
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
 }

@@ -90,6 +90,7 @@ public class Notification {
         result.put("type",type);
         result.put("status",status);
         result.put("sender_user_id", sender_user_id);
+        result.put("receiver_user_id", receiver_user_id);
         return result;
     }
 
