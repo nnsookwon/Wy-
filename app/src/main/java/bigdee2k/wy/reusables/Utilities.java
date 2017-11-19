@@ -26,6 +26,7 @@ public class Utilities {
         notification.setSender_user_id(sender_user_id);
         notification.setReceiver_user_id(receiver_user_id);
         notification.setType(type);
+        notification.setRequest(true);
 
 
 
@@ -55,15 +56,12 @@ public class Utilities {
         notification.setSender_user_id(sender_user_id);
         notification.setReceiver_user_id(receiver_user_id);
         notification.setType(type);
-
+        notification.setRequest(false);
 
 
         Map<String, Object> forumValues = notification.toMap();
 
-        // put additional information to specify location
-        forumValues.put("latitude", latitude);
-        forumValues.put("longitude", longitude);
-        forumValues.put("imageUrl", imageUrl);
+
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(pushKey, forumValues);
         databaseReference.setPriority(ServerValue.TIMESTAMP);

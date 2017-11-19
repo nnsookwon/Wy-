@@ -1,6 +1,7 @@
 package bigdee2k.wy.activities;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -47,6 +49,8 @@ public class SendLocationActivity extends AppCompatActivity {
 
 
         if (callingIntent.hasExtra("sendLocation")) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(01);
             if (callingIntent.getBooleanExtra("sendLocation", false)) {
                 // user clicked accept
                sendLocation(null);

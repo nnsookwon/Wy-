@@ -21,6 +21,9 @@ public class Notification {
     private String description;
     private String type;
     private long timestamp, status;
+    private boolean request;
+    private double longitude, latitude;
+    private String imageUrl;
 
     public Notification() {
     }
@@ -81,6 +84,38 @@ public class Notification {
         this.status = status;
     }
 
+    public boolean isRequest() {
+        return request;
+    }
+
+    public void setRequest(boolean request) {
+        this.request = request;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -91,32 +126,12 @@ public class Notification {
         result.put("status",status);
         result.put("sender_user_id", sender_user_id);
         result.put("receiver_user_id", receiver_user_id);
+        result.put("request", request);
+        result.put("longitude", longitude);
+        result.put("latitude", latitude);
+        result.put("imageUrl", imageUrl);
         return result;
     }
 
-    public static void sendNotification(String sender_user_id, String receiver_user_id, String message,String description,String type){
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(receiver_user_id);
-        String pushKey = databaseReference.push().getKey();
-
-        Notification notification = new Notification();
-        notification.setDescription(description);
-        notification.setMessage(message);
-        notification.setSender_user_id(sender_user_id);
-        notification.setReceiver_user_id(receiver_user_id);
-        notification.setType(type);
-
-        Map<String, Object> forumValues = notification.toMap();
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(pushKey, forumValues);
-        databaseReference.setPriority(ServerValue.TIMESTAMP);
-        databaseReference.updateChildren(childUpdates, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if(databaseError == null){
-
-                }
-            }
-        });
-    }
 
 }

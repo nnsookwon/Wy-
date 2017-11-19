@@ -76,7 +76,10 @@ public class FirebaseNotificationService extends Service {
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         if(dataSnapshot != null){
                             Notification notification = dataSnapshot.getValue(Notification.class);
-                            showNotification(context,notification,dataSnapshot.getKey());
+                            if (notification.isRequest())
+                                showRequestNotification(context,notification,dataSnapshot.getKey());
+                            else
+                                showLocationNotification(context,notification,dataSnapshot.getKey());
                         }
                     }
 
@@ -123,7 +126,7 @@ public class FirebaseNotificationService extends Service {
         startService(new Intent(getApplicationContext(), FirebaseNotificationService.class));
     }
 
-    private void showNotification(Context context, Notification notification, String notification_key){
+    private void showRequestNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
         Intent backIntent = new Intent(context, SendLocationActivity.class);
@@ -170,6 +173,48 @@ public class FirebaseNotificationService extends Service {
                 ))
                 .addAction(R.drawable.question_mark, "ACCEPT", pendingAcceptIntent)
                 .addAction(R.drawable.question_mark, "DECLINE", pendingDeclineIntent)
+                .setAutoCancel(true)
+                .setOngoing(true);
+
+        mBuilder.setContentIntent(pendingIntent);
+
+        NotificationManager mNotificationManager =  (NotificationManager)context. getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(1, mBuilder.build());
+    }
+
+    private void showLocationNotification(Context context, Notification notification, String notification_key){
+        flagNotificationAsSent(notification_key);
+
+        Intent backIntent = new Intent(context, SendLocationActivity.class);
+        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        backIntent.putExtra("sender_id", notification.getSender_user_id());
+        backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
+        backIntent.putExtra("longitude", notification.getLongitude());
+        backIntent.putExtra("latitude", notification.getLatitude());
+        backIntent.putExtra("imageUrl", notification.getImageUrl());
+
+
+        Intent intent = new Intent(context, MainActivity.class);
+
+        /*  Use the notification type to switch activity to stack on the main activity*/
+        if(notification.getType().equals("chat_view")){
+            intent = new Intent(context, MainActivity.class);
+        }
+
+        final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
+                new Intent[] {backIntent}, PendingIntent.FLAG_ONE_SHOT);
+
+
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(MainActivity.class);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(notification.getDescription())
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setContentText(Html.fromHtml(notification.getMessage()
+                ))
                 .setAutoCancel(true)
                 .setOngoing(true);
 
