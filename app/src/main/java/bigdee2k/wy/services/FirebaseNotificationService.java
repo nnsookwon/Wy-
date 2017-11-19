@@ -136,7 +136,6 @@ public class FirebaseNotificationService extends Service {
         backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
 
 
-
         Intent intent = new Intent(context, MainActivity.class);
 
         /*  Use the notification type to switch activity to stack on the main activity*/
@@ -170,12 +169,13 @@ public class FirebaseNotificationService extends Service {
     private void showRejectNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
-        Intent backIntent = new Intent(context, MainActivity.class);
-        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        backIntent.putExtra("sender_id", notification.getSender_user_id());
-        backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
+        Intent backIntent = new Intent();
+//        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        backIntent.putExtra("sender_id", notification.getSender_user_id());
+//        backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
 
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent();
+
 
         /*  Use the notification type to switch activity to stack on the main activity*/
         if(notification.getType().equals("chat_view")){
@@ -191,7 +191,8 @@ public class FirebaseNotificationService extends Service {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentText(Html.fromHtml(notification.getMessage()
                 ))
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .setOngoing(false);
 
         mBuilder.setContentIntent(pendingIntent);
 

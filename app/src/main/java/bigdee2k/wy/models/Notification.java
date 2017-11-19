@@ -136,6 +136,7 @@ public class Notification {
         result.put("sender_user_id", sender_user_id);
         result.put("receiver_user_id", receiver_user_id);
         result.put("request", request);
+        result.put("reject", reject);
         result.put("longitude", longitude);
         result.put("latitude", latitude);
         result.put("imageUrl", imageUrl);
