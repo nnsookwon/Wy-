@@ -53,7 +53,7 @@ public class LocationReceivedActivity extends AppCompatActivity {
     public void openMap(View v) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
 
-        intent.setData(Uri.parse("geo:" + latitude + "," + longitude));
+        intent.setData(Uri.parse("geo:0,0?q=" + latitude + "," + longitude));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }

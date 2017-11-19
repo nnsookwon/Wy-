@@ -38,6 +38,7 @@ public class SendLocationActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.send_location);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -46,22 +47,8 @@ public class SendLocationActivity extends AppCompatActivity {
 
         my_id = callingIntent.getStringExtra("receiver_id");
         friend_id = callingIntent.getStringExtra("sender_id");
+        
 
-
-        if (callingIntent.hasExtra("sendLocation")) {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(01);
-            if (callingIntent.getBooleanExtra("sendLocation", false)) {
-                // user clicked accept
-               sendLocation(null);
-
-            }
-            else {
-                // user clicked decline
-                rejectRequest(null);
-
-            }
-        }
     }
 
     @Override
@@ -71,7 +58,7 @@ public class SendLocationActivity extends AppCompatActivity {
     }
 
     public void rejectRequest(View v) {
-
+        finish();
     }
 
     public void sendLocation(View v) {
@@ -100,6 +87,9 @@ public class SendLocationActivity extends AppCompatActivity {
                                 location.getLongitude(),
                                 location.getLatitude(),
                                 "");
+
+                        finish();
+
 
                     }
                 });
