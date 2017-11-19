@@ -5,10 +5,16 @@ package bigdee2k.wy.activities;
  */
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.View;
+import android.widget.ImageView;
+
+import java.io.IOException;
 
 import bigdee2k.wy.R;
 
@@ -21,6 +27,7 @@ public class LocationReceivedActivity extends AppCompatActivity {
     private String my_id;
     private String friend_id;
     private double longitude, latitude;
+    private String imageUrl;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +41,13 @@ public class LocationReceivedActivity extends AppCompatActivity {
 
         longitude = callingIntent.getDoubleExtra("longitude", 0);
         latitude = callingIntent.getDoubleExtra("latitude", 0);
+        imageUrl = callingIntent.getStringExtra("imageUrl");
 
-        System.out.println("*********lolol" + longitude);
+        if (!imageUrl.isEmpty()) {
+            ImageView imageView = (ImageView) findViewById(R.id.image_view);
+            Bitmap imageBitmap = decodeFromFirebaseBase64(imageUrl);
+            imageView.setImageBitmap(imageBitmap);
+        }
 
 
     }
@@ -58,4 +70,10 @@ public class LocationReceivedActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
+    public static Bitmap decodeFromFirebaseBase64(String image) {
+        byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
+    }
+
 }
