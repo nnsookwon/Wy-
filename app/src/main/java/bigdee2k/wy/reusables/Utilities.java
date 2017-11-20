@@ -16,13 +16,13 @@ import bigdee2k.wy.models.Notification;
 
 public class Utilities {
 
-    public static void sendRejectNotification(final Context context, String sender_user_id, String receiver_user_id, String type){
+    public static void sendRejectNotification(final Context context, String sender_user_id, String receiver_user_id, String sender_name, String type){
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(receiver_user_id);
         String pushKey = databaseReference.push().getKey();
         Notification notification = new Notification();
 
         notification.setDescription("Request Declined");
-        notification.setMessage(Profile.getCurrentProfile().getFirstName() + " has rejected your WY@ request");
+        notification.setMessage(sender_name + " has rejected your WY@ request");
         notification.setSender_user_id(sender_user_id);
         notification.setReceiver_user_id(receiver_user_id);
         notification.setType(type);

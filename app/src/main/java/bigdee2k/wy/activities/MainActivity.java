@@ -3,6 +3,7 @@ package bigdee2k.wy.activities;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     private MyRecyclerAdapter adapter;
 
 
+    private SharedPreferences prefs;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         actionBar.setDisplayShowCustomEnabled(true);
         */
 
+        prefs = getSharedPreferences("wya_pref", MODE_PRIVATE);
 
         friends = new ArrayList<>();
 
@@ -108,7 +114,20 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                     if (AccessToken.getCurrentAccessToken() != null) {
                         facebookSDKInitilized = true;
                         initFriendsList();
-                        startService(new Intent(MainActivity.this, FirebaseNotificationService.class));
+                        String my_id = Profile.getCurrentProfile().getId();
+                        String my_name = Profile.getCurrentProfile().getName();
+                        if (my_id != null && my_name != null) {
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("my_id", my_id);
+                            editor.putString("my_name", my_name);
+                            editor.commit();
+                            startService(new Intent(MainActivity.this, FirebaseNotificationService.class));
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),
+                                    "Error connecting. Notifications may not be properly received.",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             });
@@ -179,10 +198,13 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
 
     // JACK TODO: send wya request upon selecting friend
     private void sendNotificationToUser(FacebookFriend friend) {
+        String my_id = prefs.getString("my_id", "");
+        String my_name = prefs.getString("my_name", "Your friend");
+
         Utilities.sendRequestNotification(this,
-                Profile.getCurrentProfile().getId(),
+                my_id,
                 friend.getId(),
-                Profile.getCurrentProfile().getFirstName() + " would like to know wya.",
+                my_name + " would like to know wya.",
                 "Wy@ request",
                 "new_notification"
         );

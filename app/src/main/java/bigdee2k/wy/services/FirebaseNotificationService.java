@@ -36,6 +36,8 @@ public class FirebaseNotificationService extends Service {
     SharedPreferences sharedPreferences;
     public FirebaseDatabase mDatabase;
     FirebaseAuth firebaseAuth;
+
+    private SharedPreferences prefs;
     Context context;
     static String TAG = "FirebaseService";
 
@@ -44,6 +46,8 @@ public class FirebaseNotificationService extends Service {
         super.onCreate();
         context = this;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        prefs = getSharedPreferences("wya_pref", MODE_PRIVATE);
 
         mDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -68,9 +72,9 @@ public class FirebaseNotificationService extends Service {
     }
 
     private void setupNotificationListener() {
-        System.out.print(Profile.getCurrentProfile().getId());
+        String my_id = prefs.getString("my_id", "");
         mDatabase.getReference().child("notifications")
-                .child(Profile.getCurrentProfile().getId())
+                .child(my_id)
                 .orderByChild("status").equalTo(0)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
@@ -243,8 +247,9 @@ public class FirebaseNotificationService extends Service {
     }
 
     private void flagNotificationAsSent(String notification_key) {
+        String my_id = prefs.getString("my_id", "");
         mDatabase.getReference().child("notifications")
-                .child(Profile.getCurrentProfile().getId())
+                .child(my_id)
                 .child(notification_key)
                 .child("status")
                 .setValue(1);

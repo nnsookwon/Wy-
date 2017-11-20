@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -44,12 +45,16 @@ public class SendLocationActivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationClient;
     private String imageUrl;
     private String my_id;
+    private String my_name;
     private String friend_id;
+
+    private SharedPreferences prefs;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.send_location);
 
+        prefs = getSharedPreferences("wya_pref", MODE_PRIVATE);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         Intent callingIntent = getIntent();
@@ -57,7 +62,7 @@ public class SendLocationActivity extends AppCompatActivity {
         imageUrl = "";
         my_id = callingIntent.getStringExtra("receiver_id");
         friend_id = callingIntent.getStringExtra("sender_id");
-
+        my_name = prefs.getString("my_name", "Your friend");
 
         if (callingIntent.hasExtra("sendLocation")) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -85,6 +90,7 @@ public class SendLocationActivity extends AppCompatActivity {
         Utilities.sendRejectNotification(getApplicationContext(),
                 my_id,
                 friend_id,
+                my_name,
                 "new_notification"
         );
     }
