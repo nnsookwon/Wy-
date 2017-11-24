@@ -56,6 +56,8 @@ public class LocationReceivedActivity extends AppCompatActivity {
                 imageUrl = notification.getImageUrl();
                 latitude = notification.getLatitude();
                 longitude = notification.getLongitude();
+                
+                mDatabase.child(key).child("imageUrl").setValue("");
 
                 if (!imageUrl.isEmpty()) {
                     ImageView imageView = (ImageView) findViewById(R.id.image_view);
