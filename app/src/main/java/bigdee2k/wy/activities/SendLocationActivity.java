@@ -8,8 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +22,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.facebook.Profile;
@@ -29,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 import bigdee2k.wy.R;
 import bigdee2k.wy.reusables.Utilities;
@@ -41,6 +47,7 @@ public class SendLocationActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 111;
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL = 2;
 
     private FusedLocationProviderClient mFusedLocationClient;
     private String imageUrl;
@@ -118,15 +125,17 @@ public class SendLocationActivity extends AppCompatActivity {
     }
 
     public void sendLocation() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
 
-            return;
+                return;
+            }
         }
         mFusedLocationClient.getLastLocation()
                 .addOnCompleteListener(this, new OnCompleteListener<Location>() {
@@ -167,14 +176,41 @@ public class SendLocationActivity extends AppCompatActivity {
                 return;
             }
 
-            // other 'case' lines to check for other
-            // permissions this app might request
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, try again
+                    launchCamera();
+                }
+                return;
+            }
+
         }
     }
 
-    // Check permissions before calling this function
+
     public void launchCamera() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL);
+
+                return;
+            }
+        }
+
+        String filename = Environment.getExternalStorageDirectory().getPath() + "/test/temp.jpg";
+        Uri imageUri = Uri.fromFile(new File(filename));
+
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
@@ -183,10 +219,18 @@ public class SendLocationActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //Bundle extras = data.getExtras();
+            //Bitmap imageBitmap = (Bitmap) extras.get("data");
             // mImageLabel.setImageBitmap(imageBitmap);
-            imageUrl= encodeBitmapAndSaveToFirebase(imageBitmap);
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            String filename = Environment.getExternalStorageDirectory().getPath() + "/test/temp.jpg";
+           // Uri imageUri = Uri.fromFile(new File(filename));
+            Bitmap bitmap = BitmapFactory.decodeFile(filename, options);
+
+            imageUrl= encodeBitmapAndSaveToFirebase(bitmap);
+
             sendLocation();
         }
     }
