@@ -13,20 +13,36 @@ import com.google.firebase.database.ServerValue;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Akinsete on 7/30/16.
- */
-
 public class Notification {
 
-    String user_id;
+    private String sender_user_id;
+    private String receiver_user_id;
+    private String message;
+    private String description;
+    private String type;
+    private long timestamp, status;
+    private boolean request;
+    private boolean reject;
+    private double longitude, latitude;
+    private String imageUrl;
 
-    public String getUser_id() {
-        return user_id;
+    public Notification() {
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public String getSender_user_id() {
+        return sender_user_id;
+    }
+
+    public void setSender_user_id(String sender_user_id) {
+        this.sender_user_id = sender_user_id;
+    }
+
+    public String getReceiver_user_id() {
+        return receiver_user_id;
+    }
+
+    public void setReceiver_user_id(String receiver_user_id) {
+        this.receiver_user_id = receiver_user_id;
     }
 
     public String getMessage() {
@@ -69,14 +85,45 @@ public class Notification {
         this.status = status;
     }
 
-    String message;
-    String description;
-    String type;
-    long timestamp,status;
-
-    public Notification() {
+    public boolean isRequest() {
+        return request;
     }
 
+    public boolean isReject() {
+        return reject;
+    }
+
+    public void setRequest(boolean request) {
+        this.request = request;
+    }
+
+    public void setReject (boolean reject) {
+        this.reject = reject;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     @Exclude
     public Map<String, Object> toMap() {
@@ -86,31 +133,15 @@ public class Notification {
         result.put("timestamp", ServerValue.TIMESTAMP);
         result.put("type",type);
         result.put("status",status);
+        result.put("sender_user_id", sender_user_id);
+        result.put("receiver_user_id", receiver_user_id);
+        result.put("request", request);
+        result.put("reject", reject);
+        result.put("longitude", longitude);
+        result.put("latitude", latitude);
+        result.put("imageUrl", imageUrl);
         return result;
     }
 
-    public static void sendNotification(String user_id,String message,String description,String type){
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("notifications").child(user_id);
-        String pushKey = databaseReference.push().getKey();
-
-        Notification notification = new Notification();
-        notification.setDescription(description);
-        notification.setMessage(message);
-        notification.setUser_id(user_id);
-        notification.setType(type);
-
-        Map<String, Object> forumValues = notification.toMap();
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(pushKey, forumValues);
-        databaseReference.setPriority(ServerValue.TIMESTAMP);
-        databaseReference.updateChildren(childUpdates, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if(databaseError == null){
-
-                }
-            }
-        });
-    }
 
 }
