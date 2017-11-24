@@ -102,6 +102,10 @@ public class Utilities {
                 if(databaseError == null){
                     Toast.makeText(context,"Location sent",Toast.LENGTH_LONG).show();
                 }
+                else {
+
+                    Toast.makeText(context,databaseError.getMessage() + "," + databaseError.getDetails(), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

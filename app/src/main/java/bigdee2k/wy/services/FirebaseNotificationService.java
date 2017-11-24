@@ -209,12 +209,17 @@ public class FirebaseNotificationService extends Service {
 
         Intent backIntent = new Intent(context, LocationReceivedActivity.class);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        backIntent.putExtra("sender_id", notification.getSender_user_id());
+
+
+
+        backIntent.putExtra("key", "notifications/" + notification.getReceiver_user_id()+ "/"+notification_key);
+
+        /*backIntent.putExtra("sender_id", notification.getSender_user_id());
         backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
         backIntent.putExtra("longitude", notification.getLongitude());
         backIntent.putExtra("latitude", notification.getLatitude());
         backIntent.putExtra("imageUrl", notification.getImageUrl());
-
+        */
 
         Intent intent = new Intent(context, MainActivity.class);
 
