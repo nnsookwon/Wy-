@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -94,6 +95,23 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         adapter.notifyDataSetChanged();
 
         checkAuth();
+        Button instructions = (Button)findViewById(R.id.instructions_button);
+        instructions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("How to Use")
+                        .setMessage("Tap on any of your friends to send a request to find out where they @")
+                        .setCancelable(false)
+                        .setNegativeButton("Close",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
     }
 
     private void checkAuth() {
