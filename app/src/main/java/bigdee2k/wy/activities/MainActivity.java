@@ -100,10 +100,10 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("How to Use")
-                        .setMessage("Tap on any of your friends to send a request to find out where they @")
+                builder.setTitle(R.string.how_to_use)
+                        .setMessage(R.string.instruction_message)
                         .setCancelable(false)
-                        .setNegativeButton("Close",new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.close,new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
@@ -231,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     @Override
     public void recyclerViewListClicked(View v, int position) {
         final FacebookFriend friend = friends.get(position);
-        System.out.println("User name: " + friend.getUserName() + "\nID: " + friend.getId() + "\n");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Do you want to ask " + friend.getUserName() + " WY@?")
                 .setCancelable(false)
@@ -248,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                     }
                 });
         AlertDialog alert = builder.create();
-        alert.setTitle("Are You Sure?");
+        alert.setTitle(R.string.rusure);
         alert.show();
         //requestConfirmation(friend.getUserName());
         //onLaunchCamera();

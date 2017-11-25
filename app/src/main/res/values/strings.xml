@@ -1,7 +1,12 @@
 <resources>
-    <string name="app_name">Wy@</string>
+    <string name="app_name">Where You @</string>
     <string name="facebook_app_id">126356824735165</string>
     <string name="fb_login_protocol_scheme">fb126356824735165</string>
     <string name="sign_out">Sign out</string>
     <string name="name">Name</string>
+    <string name="rusure">Are You Sure?</string>
+    <string name="instructions">Instructions</string>
+    <string name="how_to_use">How to Use</string>
+    <string name="instruction_message">Tap on any of your friends to send a request to find out where they @</string>
+    <string name="close">Close</string>
 </resources>
