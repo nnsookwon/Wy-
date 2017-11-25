@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Where You @</string>
+    <string name="app_name">WY@</string>
     <string name="facebook_app_id">126356824735165</string>
     <string name="fb_login_protocol_scheme">fb126356824735165</string>
     <string name="sign_out">Sign out</string>
