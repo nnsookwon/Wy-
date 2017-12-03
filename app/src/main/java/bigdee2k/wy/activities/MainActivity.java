@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
 
         friends = new ArrayList<>();
 
-        adapter = new MyRecyclerAdapter(friends);
+        adapter = new MyRecyclerAdapter(friends, getApplicationContext());
         adapter.setItemListener(this);
         recyclerView = (RecyclerView)findViewById(R.id.friend_list_recycler_view);
         recyclerView.setAdapter(adapter);
@@ -277,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putBoolean("block_" + friend.getId(), false);
                             editor.apply();
+                            adapter.notifyDataSetChanged();
                         }
                     });
 
@@ -301,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putBoolean("block_" + friend.getId(), true);
                             editor.apply();
+                            adapter.notifyDataSetChanged();
                         }
                     });
             title = "Block friend";

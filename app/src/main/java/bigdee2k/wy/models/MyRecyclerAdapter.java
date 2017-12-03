@@ -1,6 +1,8 @@
 package bigdee2k.wy.models;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 
 import bigdee2k.wy.R;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -27,6 +30,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
     private static RecyclerViewClickListener itemListener;
     private LayoutInflater inflater;
     private Context context;
+    SharedPreferences prefs;
 
 
     // Provide a reference to the views for each data item
@@ -36,15 +40,26 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
         // each data item is just a string in this case
 
         public ImageView picture;
+        public ImageView block;
         public TextView name;
         public View view;
         public ViewHolder(View v) {
             super(v);
             view = v;
+            block = (ImageView) v.findViewById(R.id.block);
             picture = (ImageView) v.findViewById(R.id.friend_list_picture);
             name = (TextView) v.findViewById(R.id.friend_list_name);
         }
+        public void putXOverPicture(){
+            block.setVisibility(View.VISIBLE);
+        }
+
+        public void removeXOverPicture(){
+            block.setVisibility(View.INVISIBLE);
+        }
     }
+
+
 
     public interface RecyclerViewClickListener {
         void recyclerViewListClicked(View v, int position);
@@ -52,8 +67,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyRecyclerAdapter(ArrayList<FacebookFriend> myDataset) {
+    public MyRecyclerAdapter(ArrayList<FacebookFriend> myDataset, Context context) {
         facebookFriends = myDataset;
+        this.context = context;
+
+        prefs = context.getSharedPreferences("wya_pref", MODE_PRIVATE);
     }
 
     public void setItemListener(RecyclerViewClickListener listener) {
@@ -99,6 +117,15 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
                 return true;
             }
         });
+
+        // friend is blocked
+        if (prefs.getBoolean("block_" + facebookFriends.get(position).getId(), false)) {
+            holder.putXOverPicture();
+        }
+        else {
+            holder.removeXOverPicture();
+        }
+
 
 
     }

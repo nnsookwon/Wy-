@@ -7,6 +7,6 @@
     <string name="rusure">Are You Sure?</string>
     <string name="instructions">Instructions</string>
     <string name="how_to_use">How to Use</string>
-    <string name="instruction_message">Tap on any of your friends to send a request to find out where they @</string>
+    <string name="instruction_message">Tap on any of your friends to send a request to find out where they @\n\nLong press on any of your friends to block them.</string>
     <string name="close">Close</string>
 </resources>

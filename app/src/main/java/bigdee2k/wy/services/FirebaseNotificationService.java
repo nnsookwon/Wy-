@@ -186,6 +186,10 @@ public class FirebaseNotificationService extends Service {
     private void showRejectNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
+        if (prefs.getBoolean("block_" + notification.getSender_user_id(), false)) {
+            // friend is blocked, so don't show notification
+            return;
+        }
         Intent backIntent = new Intent();
         backIntent.setAction(Long.toString(System.currentTimeMillis()));
 //        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -223,6 +227,12 @@ public class FirebaseNotificationService extends Service {
 
         if (prefs.getBoolean("block_" + notification.getSender_user_id(), false)) {
             // friend is blocked, so don't show notification
+
+            String my_id = prefs.getString("my_id", "");
+            mDatabase.getReference().child("notifications")
+                    .child(my_id)
+                    .child(notification_key)
+                    .child("imageUrl").setValue("");
             return;
         }
 
