@@ -253,6 +253,29 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
         //onLaunchCamera();
     }
 
+    @Override
+    public void recyclerViewListLongClicked(View v, int position) {
+        final FacebookFriend friend = friends.get(position);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to block " + friend.getUserName() + "?")
+                .setCancelable(false)
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO: insert logic for putting X over profile pic
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setTitle("Block friend");
+        alert.show();
+    }
+
     public void requestConfirmation(String name) {
         // 1. Instantiate an AlertDialog.Builder with its constructor
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -262,6 +285,8 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                 .setTitle("Wya Request Sent!")
                 .show();
     }
+
+
 
 
 

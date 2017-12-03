@@ -48,6 +48,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
 
     public interface RecyclerViewClickListener {
         void recyclerViewListClicked(View v, int position);
+        void recyclerViewListLongClicked(View v, int position);
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
@@ -89,6 +90,13 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
             @Override
             public void onClick(View v) {
                 itemListener.recyclerViewListClicked(v, holder.getPosition());
+            }
+        });
+        holder.view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                itemListener.recyclerViewListLongClicked(v, holder.getPosition());
+                return true;
             }
         });
 

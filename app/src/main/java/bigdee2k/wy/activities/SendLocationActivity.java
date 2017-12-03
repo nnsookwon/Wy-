@@ -108,6 +108,7 @@ public class SendLocationActivity extends AppCompatActivity {
                 my_name,
                 "new_notification"
         );
+        finish();
     }
 
     public void acceptRequest(View v) {
@@ -150,18 +151,23 @@ public class SendLocationActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         Location location = task.getResult();
-                        System.out.println("&&&&&&&&");
-                        Utilities.sendLocationNotification(getApplicationContext(),
-                                my_id,
-                                friend_id,
-                                "Click to find your friend",
-                                "Location received",
-                                "new_notification",
-                                location.getLongitude(),
-                                location.getLatitude(),
-                                imageUrl);
+                        if (location != null) {
+                            Utilities.sendLocationNotification(getApplicationContext(),
+                                    my_id,
+                                    friend_id,
+                                    "Click to see where " + my_name + " is at.",
+                                    "Location received",
+                                    "new_notification",
+                                    location.getLongitude(),
+                                    location.getLatitude(),
+                                    imageUrl);
+                            finish();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),"Error retrieving location. Please try again",
+                                    Toast.LENGTH_LONG).show();
+                        }
 
-                        finish();
 
 
                     }

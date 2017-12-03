@@ -24,6 +24,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
+
 import bigdee2k.wy.R;
 import bigdee2k.wy.activities.LocationReceivedActivity;
 import bigdee2k.wy.activities.MainActivity;
@@ -40,6 +42,11 @@ public class FirebaseNotificationService extends Service {
     private SharedPreferences prefs;
     Context context;
     static String TAG = "FirebaseService";
+
+    private int randomId() {
+        int m = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        return m;
+    }
 
     @Override
     public void onCreate() {
@@ -138,6 +145,7 @@ public class FirebaseNotificationService extends Service {
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         backIntent.putExtra("sender_id", notification.getSender_user_id());
         backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
+        backIntent.setAction(Long.toString(System.currentTimeMillis()));
 
 
         Intent intent = new Intent(context, MainActivity.class);
@@ -167,13 +175,14 @@ public class FirebaseNotificationService extends Service {
         mBuilder.setContentIntent(pendingIntent);
 
         NotificationManager mNotificationManager =  (NotificationManager)context. getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1, mBuilder.build());
+        mNotificationManager.notify(randomId(), mBuilder.build());
     }
 
     private void showRejectNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
         Intent backIntent = new Intent();
+        backIntent.setAction(Long.toString(System.currentTimeMillis()));
 //        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //        backIntent.putExtra("sender_id", notification.getSender_user_id());
 //        backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
@@ -201,7 +210,7 @@ public class FirebaseNotificationService extends Service {
         mBuilder.setContentIntent(pendingIntent);
 
         NotificationManager mNotificationManager =  (NotificationManager)context. getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1, mBuilder.build());
+        mNotificationManager.notify(randomId(), mBuilder.build());
     }
 
     private void showLocationNotification(Context context, Notification notification, String notification_key){
@@ -209,10 +218,8 @@ public class FirebaseNotificationService extends Service {
 
         Intent backIntent = new Intent(context, LocationReceivedActivity.class);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-
-
         backIntent.putExtra("key", "notifications/" + notification.getReceiver_user_id()+ "/"+notification_key);
+        backIntent.setAction(Long.toString(System.currentTimeMillis()));
 
         /*backIntent.putExtra("sender_id", notification.getSender_user_id());
         backIntent.putExtra("receiver_id", notification.getReceiver_user_id());
@@ -248,7 +255,7 @@ public class FirebaseNotificationService extends Service {
         mBuilder.setContentIntent(pendingIntent);
 
         NotificationManager mNotificationManager =  (NotificationManager)context. getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1, mBuilder.build());
+        mNotificationManager.notify(randomId(), mBuilder.build());
     }
 
     private void flagNotificationAsSent(String notification_key) {
