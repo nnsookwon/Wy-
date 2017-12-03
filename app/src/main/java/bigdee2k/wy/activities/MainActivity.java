@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                         sendNotificationToUser(friend);
                     }
                 });
+        //comment
         AlertDialog alert = builder.create();
         alert.setTitle(R.string.rusure);
         alert.show();
