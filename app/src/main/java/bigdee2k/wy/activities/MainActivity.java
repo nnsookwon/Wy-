@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putString("my_id", my_id);
                             editor.putString("my_name", my_name);
-                            editor.commit();
+                            editor.apply();
                             startService(new Intent(MainActivity.this, FirebaseNotificationService.class));
                         }
                         else {
@@ -257,22 +257,56 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerAdapter
     public void recyclerViewListLongClicked(View v, int position) {
         final FacebookFriend friend = friends.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Do you want to block " + friend.getUserName() + "?")
-                .setCancelable(false)
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO: insert logic for putting X over profile pic
-                    }
-                });
+        String title = "";
+        // friend already blocked, asked to unblock
+        if (prefs.getBoolean("block_" + friend.getId(), false)) {
+            builder.setMessage("Do you want to unblock " + friend.getUserName() + "?")
+                    .setCancelable(false)
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO: insert logic for removing X over profile pic
+
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putBoolean("block_" + friend.getId(), false);
+                            editor.apply();
+                        }
+                    });
+
+            title = "Unblock friend";
+
+        }
+        // ask to block
+        else {
+            builder.setMessage("Do you want to block " + friend.getUserName() + "?")
+                    .setCancelable(false)
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO: insert logic for putting X over profile pic
+
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putBoolean("block_" + friend.getId(), true);
+                            editor.apply();
+                        }
+                    });
+            title = "Block friend";
+        }
+
         AlertDialog alert = builder.create();
-        alert.setTitle("Block friend");
+        alert.setTitle(title);
         alert.show();
     }
 

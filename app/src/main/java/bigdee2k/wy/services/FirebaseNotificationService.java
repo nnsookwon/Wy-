@@ -141,6 +141,11 @@ public class FirebaseNotificationService extends Service {
     private void showRequestNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
 
+        if (prefs.getBoolean("block_" + notification.getSender_user_id(), false)) {
+            // friend is blocked, so don't show notification
+            return;
+        }
+
         Intent backIntent = new Intent(context, SendLocationActivity.class);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         backIntent.putExtra("sender_id", notification.getSender_user_id());
@@ -215,6 +220,11 @@ public class FirebaseNotificationService extends Service {
 
     private void showLocationNotification(Context context, Notification notification, String notification_key){
         flagNotificationAsSent(notification_key);
+
+        if (prefs.getBoolean("block_" + notification.getSender_user_id(), false)) {
+            // friend is blocked, so don't show notification
+            return;
+        }
 
         Intent backIntent = new Intent(context, LocationReceivedActivity.class);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
